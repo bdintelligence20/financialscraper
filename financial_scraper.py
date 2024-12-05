@@ -1,22 +1,51 @@
 import requests
 from bs4 import BeautifulSoup
+import streamlit as st
 
-# URL of the Latest Results page
-url = "https://www.sharedata.co.za/v2/Scripts/LatestResults.aspx"
+# Function to extract "View Results" links
+def extract_links():
+    url = "https://www.sharedata.co.za/v2/Scripts/LatestResults.aspx"
+    try:
+        # Fetch the page content
+        response = requests.get(url)
+        response.raise_for_status()
 
-# Send a GET request to fetch the page content
-response = requests.get(url)
-response.raise_for_status()  # Raise an exception for HTTP errors
+        # Parse the HTML content
+        soup = BeautifulSoup(response.text, 'html.parser')
 
-# Parse the HTML content using BeautifulSoup
-soup = BeautifulSoup(response.text, 'html.parser')
+        # Find all "View Results" links
+        links = [
+            f"https://www.sharedata.co.za{a['href']}"
+            for a in soup.find_all('a', title='View Results', href=True)
+        ]
+        return links
+    except Exception as e:
+        st.error(f"Error extracting links: {e}")
+        return []
 
-# Find all 'a' tags with the title 'View Results'
-view_results_links = soup.find_all('a', title='View Results')
+# Streamlit App
+def main():
+    st.title("Extract 'View Results' Links")
+    st.write("This app extracts all 'View Results' links from the ShareData Latest Results page.")
 
-# Extract the href attribute from each 'a' tag and print it
-for link in view_results_links:
-    href = link.get('href')
-    if href:
-        full_url = f"https://www.sharedata.co.za{href}"
-        print(full_url)
+    if st.button("Extract Links"):
+        st.info("Extracting links...")
+        links = extract_links()
+
+        if links:
+            st.success(f"Extracted {len(links)} links.")
+            st.write("\n".join(links))
+
+            # Provide a download button for the links
+            links_text = "\n".join(links)
+            st.download_button(
+                label="Download Links",
+                data=links_text,
+                file_name="view_results_links.txt",
+                mime="text/plain"
+            )
+        else:
+            st.warning("No links were found.")
+
+if __name__ == "__main__":
+    main()
