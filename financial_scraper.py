@@ -13,10 +13,11 @@ def extract_links():
         # Parse the HTML content
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Find all "View Results" links
+        # Find all "View Results" links based on the structure provided
         links = [
             f"https://www.sharedata.co.za{a['href']}"
-            for a in soup.find_all('a', title='View Results', href=True)
+            for a in soup.find_all('a', href=True)
+            if "Results.aspx?c=" in a['href']
         ]
         return links
     except Exception as e:
@@ -34,7 +35,8 @@ def main():
 
         if links:
             st.success(f"Extracted {len(links)} links.")
-            st.write("\n".join(links))
+            for link in links:
+                st.write(link)
 
             # Provide a download button for the links
             links_text = "\n".join(links)
