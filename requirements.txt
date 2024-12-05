@@ -1,8 +1,4 @@
-streamlit
-pandas
-requests
-beautifulsoup4
-openpyxl
-xlsxwriter
 selenium
-playwright
+undetected-chromedriver
+pandas
+streamlit
