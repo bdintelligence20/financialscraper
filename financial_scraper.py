@@ -4,8 +4,10 @@ import streamlit as st
 # Function to extract links using Playwright
 def extract_links():
     url = "https://www.sharedata.co.za/v2/Scripts/LatestResults.aspx"
+
     try:
         with sync_playwright() as p:
+            # Launch Chromium in headless mode
             browser = p.chromium.launch(headless=True)
             context = browser.new_context()
             page = context.new_page()
