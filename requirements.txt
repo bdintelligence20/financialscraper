@@ -1,5 +1,4 @@
 selenium
-undetected-chromedriver
-pandas
+webdriver-manager
 streamlit
-setuptools
+pandas

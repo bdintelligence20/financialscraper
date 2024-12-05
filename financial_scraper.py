@@ -1,17 +1,26 @@
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
 import pandas as pd
 import streamlit as st
+from selenium.webdriver.common.by import By
 import time
 
-# Function to initialize Selenium driver
+# Import Selenium and WebDriver Manager
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+
+# Initialize Selenium WebDriver
 def init_driver():
-    options = uc.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    driver = uc.Chrome(options=options)
-    return driver
+    try:
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+        return driver
+    except Exception as e:
+        raise RuntimeError(f"Error initializing WebDriver: {e}")
 
 # Function to log in
 def login(driver, username, password):
